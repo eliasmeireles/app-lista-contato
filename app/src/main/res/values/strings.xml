@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Lista De Contatos</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+
+    <string name="company_name">System Plus</string>
+    <string name="company_contact">systemplus@gmail.com</string>
+    <string name="new_user">Cadastrar Novo Contato</string>
+    <string name="user_name">Nome do Contato</string>
+    <string name="user_phone">Telefone</string>
+    <string name="efetuar_cadastro">Cadastrar</string>
+    <string name="address_title">Endereço</string>
+
+
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+    <string name="permission_granted">Permição a localização adcionada!</string>
+    <string name="address_find_one">Localizar um endereço</string>
+    <string name="find_an_address">Endereço</string>
+    <string name="title_activity_user_address">Map</string>
+    <string name="get_map_address">Usar esse endereço</string>
+    <string name="address_found">Endereço encontrado</string>
+    <string name="no_address_found">Endereço não encrontrado</string>
+    <string name="invalid_lat_long_used">Dados incorretos para latitude e longitude</string>
+    <string name="service_not_available">Serviço indisponivel</string>
+</resources>

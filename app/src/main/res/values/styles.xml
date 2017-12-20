@@ -1,0 +1,45 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="splash_home">
+        <item name="android:textStyle">bold</item>
+        <item name="android:text">@string/app_name</item>
+        <item name="android:shadowDx">-2</item>
+        <item name="android:shadowColor">@color/colorSecondaryDark</item>
+        <item name="android:shadowDy">-2</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:textSize">@dimen/splash_size</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="title_style">
+        <item name="android:textSize">18dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
+    <style name="pattern_text">
+        <item name="android:textSize">14dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+
+</resources>
