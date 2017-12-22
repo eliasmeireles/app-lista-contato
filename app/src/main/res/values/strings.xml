@@ -23,10 +23,12 @@
     <string name="permission_granted">Permição a localização adcionada!</string>
     <string name="address_find_one">Localizar um endereço</string>
     <string name="find_an_address">Endereço</string>
+    <string name="contact_salve_button_text">Salvar</string>
     <string name="title_activity_user_address">Map</string>
     <string name="get_map_address">Usar esse endereço</string>
     <string name="address_found">Endereço encontrado</string>
     <string name="no_address_found">Endereço não encrontrado</string>
     <string name="invalid_lat_long_used">Dados incorretos para latitude e longitude</string>
     <string name="service_not_available">Serviço indisponivel</string>
+    <string name="pick_image_intent_text" >Escolha onde pegar a foto</string>
 </resources>

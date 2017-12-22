@@ -4,102 +4,54 @@ package systemplus.com.br.listadecontatos.model;
  * Created by elias on 20/12/17.
  */
 
-class Endereco {
+public class Endereco {
 
-    private String id;
-    private String rua;
-    private String numero;
-    private String bairro;
-    private String cidade;
-    private String estado;
-    private String pais;
-    private double logitute;
-    private double latitude;
+    private long id;
+    private String enderecoInfor;
+    private Double latitude;
+    private Double longitude;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getRua() {
-        return rua;
+    public String getEnderecoInfor() {
+        return enderecoInfor;
     }
 
-    public void setRua(String rua) {
-        this.rua = rua;
+    public void setEnderecoInfor(String enderecoInfor) {
+        this.enderecoInfor = enderecoInfor;
     }
 
-    public String getNumero() {
-        return numero;
-    }
 
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getBairro() {
-        return bairro;
-    }
-
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
-    }
-
-    public String getCidade() {
-        return cidade;
-    }
-
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getPais() {
-        return pais;
-    }
-
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-
-    public double getLogitute() {
-        return logitute;
-    }
-
-    public void setLogitute(double logitute) {
-        this.logitute = logitute;
-    }
-
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     @Override
     public String toString() {
         return "Endereco{" +
                 "id='" + id + '\'' +
-                ", rua='" + rua + '\'' +
-                ", numero='" + numero + '\'' +
-                ", bairro='" + bairro + '\'' +
-                ", cidade='" + cidade + '\'' +
-                ", estado='" + estado + '\'' +
-                ", pais='" + pais + '\'' +
-                ", logitute=" + logitute +
+                ", enderecoInfor='" + enderecoInfor + '\'' +
                 ", latitude=" + latitude +
+                ", longitude=" + longitude +
                 '}';
     }
 }
+

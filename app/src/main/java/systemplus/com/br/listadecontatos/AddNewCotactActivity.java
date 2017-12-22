@@ -46,7 +46,7 @@ public class AddNewCotactActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private FragmentTransaction getFragmentTransaction() {
+    public FragmentTransaction getFragmentTransaction() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         return fragmentManager.beginTransaction();
     }

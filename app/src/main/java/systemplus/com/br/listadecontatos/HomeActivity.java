@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,18 +25,24 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
+import systemplus.com.br.listadecontatos.core.ContactQuery;
+import systemplus.com.br.listadecontatos.model.Contact;
+
 public class HomeActivity extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private final static int APP_PERMISION_FINE_LOCATION = 101;
     private GoogleMap mMap;
+    private List<Contact> contactList;
+    private FusedLocationProviderClient mFusedLocationClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        requestPermission();
 
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
@@ -52,6 +60,13 @@ public class HomeActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.contacts_map);
         mapFragment.getMapAsync(this);
+
+    }
+
+    @Override
+    protected void onResume() {
+        addContactsOnMap();
+        super.onResume();
     }
 
     @Override
@@ -107,9 +122,53 @@ public class HomeActivity extends AppCompatActivity
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermission();
+        } else {
+            addContactsOnMap();
+            mapView();
+        }
+
+    }
+
+    private void mapView() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "É preciso ativar o serviço de localização!", Toast.LENGTH_LONG).show();
+        } else {
+            mMap.setMyLocationEnabled(true);
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
+                        }
+                    });
+
+            addContactsOnMap();
+        }
+    }
+
+    private void addContactsOnMap() {
+        if (mMap != null) {
+            ContactQuery contactQuery = new ContactQuery(this, null);
+            contactList = contactQuery.find();
+
+            if (contactList != null && contactList.size() > 0) {
+
+                for (Contact co : contactList) {
+
+                    LatLng contadoLocation = new LatLng(co.getEndereco().getLatitude(), co.getEndereco().getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(contadoLocation).title(co.getNome()));
+                }
+            }
+        }
     }
 
     private void requestPermission() {
@@ -128,12 +187,13 @@ public class HomeActivity extends AppCompatActivity
         switch (requestCode) {
             case APP_PERMISION_FINE_LOCATION:
 
-                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mapView();
                     Toast.makeText(this, getResources().getString(R.string.permission_granted), Toast.LENGTH_SHORT).show();
-                    finish();
                 }
 
                 break;
         }
     }
+
 }

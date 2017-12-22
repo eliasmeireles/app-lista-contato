@@ -1,21 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_height="match_parent"
             android:orientation="vertical">
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@color/colorPrimary"
+                android:gravity="center">
+
+                <RelativeLayout
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="35dp"
+                        android:src="@mipmap/ic_user" />
+
+
+                    <ImageView
+                        android:id="@+id/user_set_image"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/camera_fundo" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/padding_padrao"
+                android:paddingRight="@dimen/padding_padrao">
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -47,79 +81,62 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="@string/user_phone"
-                        android:inputType="textPhonetic" />
+                        android:inputType="phone"
+                        android:maxLength="13" />
 
                 </android.support.design.widget.TextInputLayout>
 
-                <LinearLayout
-                    android:layout_gravity="center"
-                    android:id="@+id/address_picker"
+
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@color/colorWhite"
+                    android:paddingTop="@dimen/text_input_layout_padding_top">
+
+                    <EditText
+                        android:id="@+id/address_picker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:focusable="false"
+                        android:hint="@string/address_title"
+                        android:inputType="textPersonName|textAutoCorrect|textCapWords" />
+
+                </android.support.design.widget.TextInputLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/save_contact"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_marginBottom="20dp"
-                    android:paddingTop="@dimen/text_input_layout_padding_top"
-                    android:paddingBottom="@dimen/text_input_layou_padding_top"
+                    android:layout_marginTop="@dimen/padding_padrao"
                     android:background="@color/colorPrimary"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingBottom="@dimen/button_padding"
+                    android:paddingTop="@dimen/button_padding">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_location" />
+                        android:src="@mipmap/ic_sent" />
 
                     <TextView
-                        android:text="@string/find_an_address"
+                        style="@style/button_style"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
+                        android:text="@string/contact_salve_button_text"
                         android:textColor="@color/colorWhite"
                         android:textSize="@dimen/font_size_primary_input_button" />
 
 
                 </LinearLayout>
-
             </LinearLayout>
 
-
-            <LinearLayout
-                android:layout_width="250dp"
-                android:layout_gravity="center"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/pattern_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/address_street"/>
-
-                <TextView
-                    style="@style/pattern_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/address_number"/>
-
-                <TextView
-                    style="@style/pattern_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/address_city"/>
-
-                <TextView
-                    style="@style/pattern_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/address_state"/>
-
-                <TextView
-                    style="@style/pattern_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/address_country"/>
-
-
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
