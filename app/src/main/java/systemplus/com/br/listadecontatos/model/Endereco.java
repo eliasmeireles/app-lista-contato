@@ -1,10 +1,12 @@
 package systemplus.com.br.listadecontatos.model;
 
+import java.io.Serializable;
+
 /**
  * Created by elias on 20/12/17.
  */
 
-public class Endereco {
+public class Endereco implements Serializable{
 
     private long id;
     private String enderecoInfor;

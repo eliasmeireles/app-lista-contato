@@ -5,6 +5,17 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/got_to_home"
+            android:icon="@drawable/ic_home"
+            android:title="@string/got_to_home" />
+
+        <item
+            android:id="@+id/contact_list"
+            android:icon="@drawable/ic_contact_list"
+            android:title="@string/contact_list" />
+
+
+        <item
             android:id="@+id/add_new_contact"
             android:icon="@drawable/ic_add_new_contact"
             android:title="@string/new_user" />

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/padding_padrao"
+    android:paddingRight="@dimen/padding_padrao"
+    android:paddingTop="@dimen/list_view_padding_top"
+    app:cardUseCompatPadding="true">
+
+    <ImageView
+        android:id="@+id/contact_foto"
+        android:layout_width="@dimen/list_view_image_size"
+        android:layout_height="@dimen/list_view_image_size"
+        android:layout_alignParentLeft="true"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginRight="@dimen/list_view_image_margin_right" />
+
+    <TextView
+        android:id="@+id/contact_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/address_title"
+        style="@style/list_view_title"
+        android:layout_toRightOf="@+id/contact_foto" />
+
+    <TextView
+        android:id="@+id/contact_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/contact_name"
+        android:layout_below="@+id/contact_name" />
+
+    <TextView
+        android:id="@+id/contact_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/contact_phone"
+        android:layout_below="@+id/contact_phone" />
+
+    <View
+        android:layout_marginTop="@dimen/view_padding_top"
+        android:layout_alignLeft="@id/contact_name"
+        android:layout_below="@id/contact_address"
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+
+        android:background="@color/colorPrimary"/>
+
+
+</RelativeLayout>

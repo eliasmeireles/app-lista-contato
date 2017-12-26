@@ -24,11 +24,22 @@
     <string name="address_find_one">Localizar um endereço</string>
     <string name="find_an_address">Endereço</string>
     <string name="contact_salve_button_text">Salvar</string>
-    <string name="title_activity_user_address">Map</string>
     <string name="get_map_address">Usar esse endereço</string>
     <string name="address_found">Endereço encontrado</string>
     <string name="no_address_found">Endereço não encrontrado</string>
     <string name="invalid_lat_long_used">Dados incorretos para latitude e longitude</string>
     <string name="service_not_available">Serviço indisponivel</string>
-    <string name="pick_image_intent_text" >Escolha onde pegar a foto</string>
+    <string name="pick_image_intent_text">Escolha onde pegar a foto</string>
+    <string name="contact_list">Lista dos Contatos</string>
+    <string name="got_to_home">Inicío</string>
+    <string name="contact_added">Contato adicionado!</string>
+    <string name="need_to_add_permisson_lotcation">É preciso ativar o serviço de localização!</string>
+
+
+    <!--Contact validation fields-->
+    <string name="nedd_to_get_image">Escolha ou tire uma foto para o contato!</string>
+    <string name="address_null">Endereço obrigatório!</string>
+    <string name="phone_number_invalid">Número inválido!</string>
+    <string name="phone_null">O telefone é obrigatório!</string>
+    <string name="nome_null">Campo obrigatório!</string>
 </resources>
