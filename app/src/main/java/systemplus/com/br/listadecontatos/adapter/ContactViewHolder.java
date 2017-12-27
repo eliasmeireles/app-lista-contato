@@ -1,6 +1,7 @@
 package systemplus.com.br.listadecontatos.adapter;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import systemplus.com.br.listadecontatos.ContactDetailActivity;
 import systemplus.com.br.listadecontatos.R;
+import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
@@ -49,9 +51,9 @@ class ContactViewHolder extends RecyclerView.ViewHolder {
             // check if item still exists
             if (pos != RecyclerView.NO_POSITION) {
                 Contact contact = contactList.get(pos);
-                Intent intent = new Intent(activity, ContactDetailActivity.class);
-                intent.putExtra(CONTACT_EXTRA_KEY, contact);
-                activity.startActivity(intent);
+                DialogFragment newFragment = ContactCustomDialog.newInstance(contact);
+
+                newFragment.show(activity.getFragmentManager(), "dialog");
             }
         });
     }

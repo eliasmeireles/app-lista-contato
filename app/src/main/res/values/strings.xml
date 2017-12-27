@@ -42,4 +42,6 @@
     <string name="phone_number_invalid">Número inválido!</string>
     <string name="phone_null">O telefone é obrigatório!</string>
     <string name="nome_null">Campo obrigatório!</string>
+    <string name="abrir_map">Abrir no mapa</string>
+    <string name="cancel">Cancelar</string>
 </resources>

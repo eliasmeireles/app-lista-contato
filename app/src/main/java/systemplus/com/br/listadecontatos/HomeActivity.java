@@ -1,7 +1,12 @@
 package systemplus.com.br.listadecontatos;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -10,11 +15,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,11 +32,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.util.List;
 
 import systemplus.com.br.listadecontatos.core.ContactQuery;
+import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
 public class HomeActivity extends AppCompatActivity
@@ -36,7 +49,8 @@ public class HomeActivity extends AppCompatActivity
     private List<Contact> contactList;
     private NavigationView navigationView;
     private DrawerLayout drawer;
-        private GoogleMap mMap;
+    private GoogleMap mMap;
+    private Location location;
     private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
@@ -61,10 +75,10 @@ public class HomeActivity extends AppCompatActivity
 
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         getContactListFromDatabase();
 
@@ -122,7 +136,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
 
             case R.id.contact_list:
-                startActivity( new Intent(HomeActivity.this, ListContactAcitivity.class));
+                startActivity(new Intent(HomeActivity.this, ListContactAcitivity.class));
                 break;
             default:
                 break;
@@ -141,6 +155,7 @@ public class HomeActivity extends AppCompatActivity
 
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
+                        this.location = location;
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
@@ -157,11 +172,33 @@ public class HomeActivity extends AppCompatActivity
                 for (Contact co : contactList) {
 
                     LatLng contadoLocation = new LatLng(co.getEndereco().getLatitude(), co.getEndereco().getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(contadoLocation).title(co.getNome()));
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(contadoLocation).title(co.getNome()));
+
+                    marker.setTag(co);
+                    mMap.setOnMarkerClickListener(marker1 -> {
+
+                        Contact contact = (Contact) marker1.getTag();
+
+                        DialogFragment newFragment = ContactCustomDialog.newInstance(contact);
+
+                        newFragment.show(getFragmentManager(), "dialog");
+
+                        return false;
+                    });
                 }
             }
         }
     }
+
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
 
     private void requestPermission() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -171,7 +208,7 @@ public class HomeActivity extends AppCompatActivity
         }
 
     }
-    
+
     private void closeDrawer(DrawerLayout drawer) {
         drawer.closeDrawer(GravityCompat.START);
     }

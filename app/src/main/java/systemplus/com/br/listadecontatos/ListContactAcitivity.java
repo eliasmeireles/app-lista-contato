@@ -1,6 +1,7 @@
 package systemplus.com.br.listadecontatos;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import systemplus.com.br.listadecontatos.adapter.ContacAdapter;
 import systemplus.com.br.listadecontatos.core.ContactQuery;
+import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
@@ -140,6 +142,9 @@ public class ListContactAcitivity extends AppCompatActivity
                 Contact contact = (Contact) data.getSerializableExtra(CONTACT_EXTRA_KEY);
                 contactList.add(contact);
 
+                DialogFragment newFragment = ContactCustomDialog.newInstance(contact);
+
+                newFragment.show(getFragmentManager(), "dialog");
                 actionButton.setVisibility(View.GONE);
                 findViewById(R.id.added_contact).setVisibility(View.VISIBLE);
                 new Handler().postDelayed(() -> {

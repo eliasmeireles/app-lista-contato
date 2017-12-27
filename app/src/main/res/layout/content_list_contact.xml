@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/colorWhite"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     tools:showIn="@layout/app_bar_home">
 
     <android.support.v7.widget.RecyclerView
@@ -18,15 +18,13 @@
     </android.support.v7.widget.RecyclerView>
 
 
-
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_contact"
         android:layout_width="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="@dimen/padding_padrao"
+        android:backgroundTint="@color/colorPrimary"
         android:src="@drawable/ic_add"
         app:fabSize="normal"
         app:layout_behavior="systemplus.com.br.listadecontatos.animate.FloatingActionButtonAnimate" />
@@ -34,19 +32,19 @@
     <LinearLayout
         android:id="@+id/added_contact"
         android:layout_width="match_parent"
-        android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/colorPrimaryDark">
+        android:background="@color/colorPrimaryDark"
+        android:gravity="center">
 
         <TextView
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:paddingBottom="@dimen/padding_padrao"
             android:paddingTop="@dimen/padding_padrao"
-            style="@style/AppTheme"
-            android:layout_gravity="center"
-            android:textColor="@color/colorWhite"
-            android:text="@string/contact_added" />
+            android:text="@string/contact_added"
+            android:textColor="@color/colorWhite" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
