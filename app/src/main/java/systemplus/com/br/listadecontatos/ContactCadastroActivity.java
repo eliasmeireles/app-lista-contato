@@ -2,6 +2,7 @@ package systemplus.com.br.listadecontatos;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -19,6 +20,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -69,7 +71,11 @@ public class ContactCadastroActivity extends AppCompatActivity {
         contactName = findViewById(R.id.contact_name);
 
         contactPhone = findViewById(R.id.contact_phone);
-        contactPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        String countryCode = tm.getSimCountryIso();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            contactPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher(countryCode));
+        }
 
 
         contactAddress = findViewById(R.id.address_picker);
@@ -78,7 +84,7 @@ public class ContactCadastroActivity extends AppCompatActivity {
         contactImageSet = findViewById(R.id.user_set_image);
 
         Glide.with(this)
-                .load(R.drawable.user_image)
+                .load(R.mipmap.ic_launcher)
                 .apply(RequestOptions.circleCropTransform())
                 .into(contactImage);
 

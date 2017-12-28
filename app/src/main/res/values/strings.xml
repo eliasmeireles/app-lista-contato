@@ -44,4 +44,11 @@
     <string name="nome_null">Campo obrigatório!</string>
     <string name="abrir_map">Abrir no mapa</string>
     <string name="cancel">Cancelar</string>
+    <string name="contact_list_empty">Adicione contatos a sua lista!</string>
+    <string name="snackbar_leave">Sair</string>
+    <string name="delet_contact_ask">Deletar</string>
+    <string name="delet_contact_info">Deseja deleter esse contato?</string>
+    <string name="gps_disabled">O serviço de GPS parece estar desativado, deseja ativalo?</string>
+    <string name="gps_active_accept">Ativar</string>
+    <string name="gps_disabled_title">Sem acesso ao local!</string>
 </resources>

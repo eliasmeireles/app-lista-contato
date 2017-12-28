@@ -6,6 +6,7 @@ package systemplus.com.br.listadecontatos.sql;
 
 public interface EnderecoSQL {
 
+    final String TABLE_NAME_KEY = "endereco";
     final String ID_KEY = "_id";
     final String ENDERECO_INFOR_KEY = "enderecoInfor";
     final String LATITUDE_KEY = "latitude";
@@ -13,12 +14,12 @@ public interface EnderecoSQL {
 
     String[] COLUMNS = new String[]{ID_KEY, ENDERECO_INFOR_KEY, LATITUDE_KEY, LONGITUDE_KEY};
 
-    String CREATE_TABLE_ENDERECO = "CREATE TABLE endereco (\n" +
+    String CREATE_TABLE_ENDERECO = "CREATE TABLE " + TABLE_NAME_KEY + "(\n" +
             ID_KEY              + " INTEGER     PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,\n" +
             ENDERECO_INFOR_KEY  + " TEXT        NOT NULL,\n" +
             LATITUDE_KEY        + " REAL        NOT NULL,\n" +
             LONGITUDE_KEY       + " REAL        NOT NULL\n" +
             ");";
 
-    String DROP_TABLE_ENDERECO = "DROP TABLE IF EXISTS endereco;";
+    String DROP_TABLE_ENDERECO = "DROP TABLE IF EXISTS  " + TABLE_NAME_KEY + ";";
 }

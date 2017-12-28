@@ -1,14 +1,15 @@
 package systemplus.com.br.listadecontatos;
 
-import android.app.Dialog;
+import android.annotation.SuppressLint;
 import android.app.DialogFragment;
-import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -19,12 +20,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,11 +32,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.File;
 import java.util.List;
 
 import systemplus.com.br.listadecontatos.core.ContactQuery;
 import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
+import systemplus.com.br.listadecontatos.dialog.GPSDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
 public class HomeActivity extends AppCompatActivity
@@ -76,17 +73,22 @@ public class HomeActivity extends AppCompatActivity
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        getSuporMaptFragment();
+
 
         getContactListFromDatabase();
 
+
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            new GPSDialog(this).buildAlertMessageNoGps();
+        }
     }
 
-    private void getContactListFromDatabase() {
-        ContactQuery contactQuery = new ContactQuery(this, null);
-        contactList = contactQuery.find();
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        getSuporMaptFragment();
     }
 
     @Override
@@ -95,11 +97,14 @@ public class HomeActivity extends AppCompatActivity
 
         navigationView.getMenu().findItem(R.id.contact_list).setVisible(true);
         navigationView.getMenu().findItem(R.id.got_to_home).setVisible(false);
+
+
         getContactListFromDatabase();
 
         addContactsOnMap();
 
     }
+
 
     @Override
     public void onBackPressed() {
@@ -131,10 +136,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add_new_contact:
-                startActivity(new Intent(HomeActivity.this, ContactCadastroActivity.class));
-                break;
-
             case R.id.contact_list:
                 startActivity(new Intent(HomeActivity.this, ListContactAcitivity.class));
                 break;
@@ -147,27 +148,22 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void mapView() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "É preciso ativar o serviço de localização!", Toast.LENGTH_LONG).show();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, getResources().getString(R.string.need_to_add_permisson_lotcation), Toast.LENGTH_LONG).show();
+
         } else {
-            mMap.setMyLocationEnabled(true);
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, location -> {
-                        this.location = location;
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
-                        }
-                    });
-
+            setMyLocation();
             addContactsOnMap();
         }
     }
 
     private void addContactsOnMap() {
         if (mMap != null) {
+
+            mMap.clear();
+
             if (contactList != null && contactList.size() > 0) {
                 for (Contact co : contactList) {
 
@@ -188,15 +184,45 @@ public class HomeActivity extends AppCompatActivity
                 }
             }
         }
+
     }
 
+    private void getSuporMaptFragment() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
 
-    public void showMap(Uri geoLocation) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case APP_PERMISION_FINE_LOCATION:
+
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setMyLocation();
+                } else {
+                    startActivity(new Intent(HomeActivity.this, ListContactAcitivity.class));
+                }
+
+                break;
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setMyLocation() {
+        mMap.setMyLocationEnabled(true);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
+                    }
+                });
     }
 
 
@@ -207,6 +233,15 @@ public class HomeActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    private void getContactListFromDatabase() {
+        ContactQuery contactQuery = new ContactQuery(this, null);
+        contactList = contactQuery.findAll();
+
+        if (contactList == null || contactList.size() == 0) {
+            startActivity(new Intent(HomeActivity.this, ListContactAcitivity.class));
+        }
     }
 
     private void closeDrawer(DrawerLayout drawer) {

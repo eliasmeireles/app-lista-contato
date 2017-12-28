@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/padding_padrao"
+        android:paddingRight="@dimen/padding_padrao"
+        android:paddingTop="@dimen/list_view_padding_top">
+
+
+        <ImageView
+            android:id="@+id/context_ico"
+            android:layout_width="@dimen/context_menu_ico_size"
+            android:layout_height="@dimen/context_menu_ico_size"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="@dimen/padding_padrao"
+            android:layout_marginRight="@dimen/list_view_image_margin_right"
+            android:src="@drawable/ic_action_go_to_map" />
+
+        <TextView
+            android:id="@+id/context_label"
+            style="@style/list_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/context_ico"
+            android:layout_toRightOf="@id/context_ico"
+            android:text="@string/address_title" />
+
+
+        <View
+            android:id="@+id/context_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@id/context_ico"
+            android:layout_marginTop="@dimen/view_padding_top"
+            android:background="@color/colorSecondaryDark"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+</LinearLayout>

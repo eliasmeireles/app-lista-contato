@@ -10,6 +10,7 @@ import java.util.List;
 
 import systemplus.com.br.listadecontatos.model.Contact;
 import systemplus.com.br.listadecontatos.model.Endereco;
+import systemplus.com.br.listadecontatos.sql.ContatoSQL;
 import systemplus.com.br.listadecontatos.sql.EnderecoSQL;
 
 import static systemplus.com.br.listadecontatos.core.GetSQLiteDatabase.getSQLiteDatabase;
@@ -29,9 +30,9 @@ public class EnderecoQuery implements DataQuery {
     }
 
     @Override
-    public List<Endereco> find() {
+    public List<Endereco> findAll() {
         enderecoList = new ArrayList<>();
-        Cursor cursor = database.query("endereco", EnderecoSQL.COLUMNS, null, null, null, null, null, null);
+        Cursor cursor = database.query(EnderecoSQL.TABLE_NAME_KEY, EnderecoSQL.COLUMNS, null, null, null, null, null, null);
 
         if (cursor.getCount() > 0) {
 
@@ -48,11 +49,11 @@ public class EnderecoQuery implements DataQuery {
     @Override
     public long insert() {
         ContentValues values = new ContentValues();
-        values.put("enderecoInfor", endereco.getEnderecoInfor());
-        values.put("latitude", endereco.getLatitude());
-        values.put("longitude", endereco.getLongitude());
+        values.put(EnderecoSQL.ENDERECO_INFOR_KEY, endereco.getEnderecoInfor());
+        values.put(EnderecoSQL.LATITUDE_KEY, endereco.getLatitude());
+        values.put(EnderecoSQL.LONGITUDE_KEY, endereco.getLongitude());
 
-        return database.insert("endereco", null, values);
+        return database.insert(EnderecoSQL.TABLE_NAME_KEY, null, values);
     }
 
     @Override
@@ -62,6 +63,7 @@ public class EnderecoQuery implements DataQuery {
 
     @Override
     public void delete() {
+        database.delete(EnderecoSQL.TABLE_NAME_KEY, "_id=?", new String[]{endereco.getId() + ""});
 
     }
 

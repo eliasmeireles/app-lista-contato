@@ -11,6 +11,7 @@
         android:id="@+id/recycler_view_contact_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/recycler_padding_bottom"
         android:scrollbars="vertical">
@@ -29,22 +30,4 @@
         app:fabSize="normal"
         app:layout_behavior="systemplus.com.br.listadecontatos.animate.FloatingActionButtonAnimate" />
 
-    <LinearLayout
-        android:id="@+id/added_contact"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/colorPrimaryDark"
-        android:gravity="center">
-
-        <TextView
-            style="@style/AppTheme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingBottom="@dimen/padding_padrao"
-            android:paddingTop="@dimen/padding_padrao"
-            android:text="@string/contact_added"
-            android:textColor="@color/colorWhite" />
-    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

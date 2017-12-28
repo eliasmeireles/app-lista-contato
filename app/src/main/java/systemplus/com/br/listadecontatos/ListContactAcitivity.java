@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -17,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +39,7 @@ public class ListContactAcitivity extends AppCompatActivity
     private List<Contact> contactList;
     private RecyclerView contactListRecyclerView;
     private FloatingActionButton actionButton;
+    private Snackbar snackbar;
 
 
     @Override
@@ -55,26 +58,29 @@ public class ListContactAcitivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        viewsActions();
+
+        ContactQuery contactQuery = new ContactQuery(this, null);
+        contactList = contactQuery.findAll();
+
+        setContactOnView();
+
+    }
+
+    private void viewsActions() {
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
         actionButton = findViewById(R.id.fab_add_contact);
         contactListRecyclerView = findViewById(R.id.recycler_view_contact_list);
+        actionButton.setOnClickListener(view -> startCadastro());
+    }
 
-
-        ContactQuery contactQuery = new ContactQuery(this, null);
-        contactList = contactQuery.find();
-
-
-        findViewById(R.id.added_contact).setVisibility(View.GONE);
-
-        actionButton.setOnClickListener(view -> {
-            startActivityForResult(new Intent(ListContactAcitivity.this, ContactCadastroActivity.class), 1);
-        });
-
-        setContactOnView();
-
+    private void startCadastro() {
+        chechSnack();
+        startActivityForResult(new Intent(ListContactAcitivity.this, ContactCadastroActivity.class), 1);
     }
 
     private void setContactOnView() {
@@ -96,6 +102,20 @@ public class ListContactAcitivity extends AppCompatActivity
         super.onResume();
         navigationView.getMenu().findItem(R.id.contact_list).setVisible(false);
         navigationView.getMenu().findItem(R.id.got_to_home).setVisible(true);
+
+
+        if (contactList == null || contactList.size() == 0) {
+            snackbar = Snackbar.make(actionButton, getResources().getString(R.string.contact_list_empty), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getResources().getString(R.string.snackbar_leave), view1 -> {
+                    });
+
+            View snackBarView = snackbar.getView();
+            snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            TextView textView = snackBarView.findViewById(android.support.design.R.id.snackbar_action);
+            textView.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
+            snackbar.show();
+        }
+
         setContactOnView();
     }
 
@@ -119,10 +139,6 @@ public class ListContactAcitivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.add_new_contact:
-                startActivityForResult(new Intent(ListContactAcitivity.this, ContactCadastroActivity.class), 1);
-                break;
-
             case R.id.got_to_home:
                 backHome = true;
                 this.onBackPressed();
@@ -145,18 +161,24 @@ public class ListContactAcitivity extends AppCompatActivity
                 DialogFragment newFragment = ContactCustomDialog.newInstance(contact);
 
                 newFragment.show(getFragmentManager(), "dialog");
-                actionButton.setVisibility(View.GONE);
-                findViewById(R.id.added_contact).setVisibility(View.VISIBLE);
-                new Handler().postDelayed(() -> {
-                    actionButton.setVisibility(View.VISIBLE);
-                    findViewById(R.id.added_contact).setVisibility(View.GONE);
-                }, 3000);
+                chechSnack();
 
+                snackbar = Snackbar.make(actionButton, getResources().getString(R.string.contact_added), Snackbar.LENGTH_LONG);
+
+                View snackBarView = snackbar.getView();
+                snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                snackbar.show();
                 setContactOnView();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
             }
+        }
+    }
+
+    private void chechSnack() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
         }
     }
 

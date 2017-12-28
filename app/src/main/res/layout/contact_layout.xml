@@ -13,16 +13,16 @@
         android:layout_width="@dimen/list_view_image_size"
         android:layout_height="@dimen/list_view_image_size"
         android:layout_alignParentLeft="true"
-        android:src="@mipmap/ic_launcher"
-        android:layout_marginRight="@dimen/list_view_image_margin_right" />
+        android:layout_marginRight="@dimen/list_view_image_margin_right"
+        android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/contact_name"
+        style="@style/list_view_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/address_title"
-        style="@style/list_view_title"
-        android:layout_toRightOf="@+id/contact_foto" />
+        android:layout_toRightOf="@+id/contact_foto"
+        android:text="@string/address_title" />
 
     <TextView
         android:id="@+id/contact_phone"
@@ -38,14 +38,25 @@
         android:layout_alignLeft="@+id/contact_phone"
         android:layout_below="@+id/contact_phone" />
 
+
+    <ImageView
+        android:id="@+id/recycler_view_context_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignEnd="@id/contact_foto"
+        android:clickable="true"
+        android:src="@drawable/ic_content_menu" />
+
     <View
-        android:layout_marginTop="@dimen/view_padding_top"
+        android:layout_width="wrap_content"
+        android:layout_height="0.8dp"
         android:layout_alignLeft="@id/contact_name"
         android:layout_below="@id/contact_address"
-        android:layout_width="match_parent"
-        android:layout_height="0.8dp"
+        android:layout_marginTop="@dimen/view_padding_top"
+        android:layout_marginEnd="@dimen/padding_padrao"
 
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorSecondaryDark" />
 
 
 </RelativeLayout>

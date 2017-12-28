@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 
 import systemplus.com.br.listadecontatos.R;
@@ -21,7 +22,7 @@ import systemplus.com.br.listadecontatos.model.Contact;
  * Created by elias on 22/12/17.
  */
 
-public class ContacAdapter extends RecyclerView.Adapter<ContactViewHolder> {
+public class ContacAdapter extends RecyclerView.Adapter<ContactViewHolder> implements Serializable {
 
     private Activity activity;
     private List<Contact> contactList;
@@ -34,7 +35,7 @@ public class ContacAdapter extends RecyclerView.Adapter<ContactViewHolder> {
     @Override
     public ContactViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_layout, parent, false);
-        return new ContactViewHolder(activity, itemView, contactList);
+        return new ContactViewHolder(activity, itemView, contactList, this);
     }
 
 
@@ -57,5 +58,9 @@ public class ContacAdapter extends RecyclerView.Adapter<ContactViewHolder> {
     @Override
     public int getItemCount() {
         return contactList.size();
+    }
+
+    public List<Contact> getContactList() {
+        return contactList;
     }
 }

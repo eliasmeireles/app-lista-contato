@@ -1,11 +1,16 @@
 package systemplus.com.br.listadecontatos;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,9 +30,13 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.util.List;
 
+import systemplus.com.br.listadecontatos.dialog.GPSDialog;
+
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.ADDRESS_EXTRA_KEY;
 
 public class ContactAddressActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private final static int APP_PERMISION_FINE_LOCATION = 101;
 
     private GoogleMap mMap;
     private Address address;
@@ -69,6 +78,11 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
 
             finish();
         });
+
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            new GPSDialog(this).buildAlertMessageNoGps();
+        }
     }
 
     @Override
@@ -88,18 +102,51 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, getResources().getString(R.string.need_to_add_permisson_lotcation), Toast.LENGTH_LONG).show();
+
+            requestPermission();
         } else {
-            mMap.setMyLocationEnabled(true);
+            setMyLocation();
+        }
 
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+    }
 
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, location -> {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
-                        }
-                    });
+    @SuppressLint("MissingPermission")
+    private void setMyLocation() {
+        mMap.setMyLocationEnabled(true);
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case APP_PERMISION_FINE_LOCATION:
+
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setMyLocation();
+                } else {
+                    finish();
+                }
+
+                break;
+        }
+    }
+
+    private void requestPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, APP_PERMISION_FINE_LOCATION);
+            }
         }
 
     }

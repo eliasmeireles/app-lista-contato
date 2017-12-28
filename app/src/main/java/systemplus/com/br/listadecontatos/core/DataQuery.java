@@ -10,7 +10,7 @@ import systemplus.com.br.listadecontatos.model.Contact;
 
 public interface DataQuery {
 
-    List<?> find();
+    List<?> findAll();
     long insert();
     void update();
     void delete();

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +33,12 @@ public class ContactQuery implements DataQuery {
     }
 
     @Override
-    public List<Contact> find() {
+    public List<Contact> findAll() {
         EnderecoQuery enderecoQuery = new EnderecoQuery(context, null);
-        enderecoList = enderecoQuery.find();
+        enderecoList = enderecoQuery.findAll();
 
         contactList = new ArrayList<>();
-        Cursor cursor = database.query("contato", ContatoSQL.COLUMNS, null, null, null, null, null, null);
+        Cursor cursor = database.query(ContatoSQL.TABLE_NAME_KEY, ContatoSQL.COLUMNS, null, null, null, null, null, null);
 
         if (cursor.getCount() > 0) {
 
@@ -55,7 +54,6 @@ public class ContactQuery implements DataQuery {
 
     private Contact getContactValues(Cursor cursor) {
         Contact contact = new Contact();
-//        String[] COLUMNS = new String[]{ID_KEY, NOME_KEY, FOTO_KEY, TELEFONE_KEY, ENDERECO_KEY};
 
         contact.setId(Long.parseLong(cursor.getString(0)));
         contact.setNome(cursor.getString(1));
@@ -79,12 +77,12 @@ public class ContactQuery implements DataQuery {
 
 
         ContentValues values = new ContentValues();
-        values.put("nome", contact.getNome());
-        values.put("foto", contact.getFoto());
-        values.put("telefone", contact.getTelefone());
-        values.put("endereco_id", contact.getEndereco().getId());
+        values.put(ContatoSQL.NOME_KEY, contact.getNome());
+        values.put(ContatoSQL.FOTO_KEY, contact.getFoto());
+        values.put(ContatoSQL.TELEFONE_KEY, contact.getTelefone());
+        values.put(ContatoSQL.ENDERECO_KEY, contact.getEndereco().getId());
 
-        return database.insert("contato", null, values);
+        return database.insert(ContatoSQL.TABLE_NAME_KEY, null, values);
     }
 
     @Override
@@ -94,6 +92,8 @@ public class ContactQuery implements DataQuery {
 
     @Override
     public void delete() {
-
+        database.delete(ContatoSQL.TABLE_NAME_KEY, "_id=?", new String[]{contact.getId() + ""});
+        EnderecoQuery enderecoQuery = new EnderecoQuery(context, contact.getEndereco());
+        enderecoQuery.delete();
     }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/list_view_padding_top"
+    app:cardUseCompatPadding="true">
+
+
+
+    <RelativeLayout
+        android:id="@+id/contact_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/padding_padrao"
+        android:paddingRight="@dimen/padding_padrao">
+
+        <TextView
+            android:id="@+id/delet_contact_info"
+            android:text="@string/delet_contact_info"
+            android:layout_marginBottom="@dimen/padding_padrao"
+            style="@style/title_style"
+            android:layout_width="match_parent"
+            android:paddingBottom="@dimen/padding_padrao"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/contact_foto"
+            android:layout_below="@id/delet_contact_info"
+            android:layout_width="@dimen/list_view_image_size"
+            android:layout_height="@dimen/list_view_image_size"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="@dimen/list_view_image_margin_right"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/contact_name"
+            style="@style/list_view_title"
+            android:layout_below="@id/delet_contact_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/contact_foto"
+            android:text="@string/address_title" />
+
+        <TextView
+            android:id="@+id/contact_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/contact_name"
+            android:layout_below="@+id/contact_name" />
+
+        <TextView
+            android:id="@+id/contact_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/contact_phone"
+            android:layout_below="@+id/contact_phone" />
+    </RelativeLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:layout_below="@id/contact_detail"
+        android:layout_marginTop="@dimen/padding_padrao"
+        android:background="@color/cardview_dark_background" />
+</RelativeLayout>

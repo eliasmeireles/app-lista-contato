@@ -97,8 +97,8 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="@string/user_phone"
-                        android:inputType="phone"
-                        android:maxLength="11" />
+                        android:inputType="phone|number"
+                        android:maxLength="13" />
 
                 </android.support.design.widget.TextInputLayout>
 
