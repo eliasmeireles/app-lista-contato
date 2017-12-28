@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +32,7 @@ import java.util.List;
 import systemplus.com.br.listadecontatos.dialog.GPSDialog;
 
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.ADDRESS_EXTRA_KEY;
+import static systemplus.com.br.listadecontatos.helper.CheckPermition.notLocationPemirtion;
 
 public class ContactAddressActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -79,9 +79,11 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
             finish();
         });
 
-        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            new GPSDialog(this).buildAlertMessageNoGps();
+        if (!notLocationPemirtion(this)) {
+            final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                new GPSDialog(this).buildAlertMessageNoGps();
+            }
         }
     }
 
@@ -99,8 +101,7 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (notLocationPemirtion(this)) {
             Toast.makeText(this, getResources().getString(R.string.need_to_add_permisson_lotcation), Toast.LENGTH_LONG).show();
 
             requestPermission();
@@ -143,7 +144,7 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void requestPermission() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (notLocationPemirtion(this)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, APP_PERMISION_FINE_LOCATION);
             }

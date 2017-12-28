@@ -16,7 +16,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -38,6 +37,8 @@ import systemplus.com.br.listadecontatos.core.ContactQuery;
 import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.dialog.GPSDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
+
+import static systemplus.com.br.listadecontatos.helper.CheckPermition.notLocationPemirtion;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -77,12 +78,6 @@ public class HomeActivity extends AppCompatActivity
 
 
         getContactListFromDatabase();
-
-
-        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            new GPSDialog(this).buildAlertMessageNoGps();
-        }
     }
 
     @Override
@@ -103,6 +98,12 @@ public class HomeActivity extends AppCompatActivity
 
         addContactsOnMap();
 
+        if (!notLocationPemirtion(this)) {
+            final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                new GPSDialog(this).buildAlertMessageNoGps();
+            }
+        }
     }
 
 
@@ -120,11 +121,7 @@ public class HomeActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-
+        if (notLocationPemirtion(this)) {
             requestPermission();
         } else {
             addContactsOnMap();
@@ -148,9 +145,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void mapView() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+        if (notLocationPemirtion(this)) {
             Toast.makeText(this, getResources().getString(R.string.need_to_add_permisson_lotcation), Toast.LENGTH_LONG).show();
 
         } else {
