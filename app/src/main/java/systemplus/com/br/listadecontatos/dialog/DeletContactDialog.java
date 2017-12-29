@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
@@ -22,6 +23,7 @@ import systemplus.com.br.listadecontatos.helper.GetMapHelper;
 import systemplus.com.br.listadecontatos.model.Contact;
 
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
+import static systemplus.com.br.listadecontatos.file.ImageWriterReader.PATH_FOLDER;
 
 /**
  * Created by elias on 26/12/17.
@@ -93,8 +95,11 @@ public class DeletContactDialog extends DialogFragment {
         TextView contactAddress = inflateView.findViewById(R.id.contact_address);
 
         Glide.with(this)
-                .load(new File(contact.getFoto()))
-                .apply(RequestOptions.circleCropTransform())
+                .load(new File(PATH_FOLDER + contact.getFoto()))
+                .apply(RequestOptions
+                        .circleCropTransform()
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(contactFoto);
 
 

@@ -8,16 +8,16 @@ import java.io.Serializable;
 
 public class Endereco implements Serializable{
 
-    private long id;
+    private Long id;
     private String enderecoInfor;
     private Double latitude;
     private Double longitude;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
@@ -17,6 +18,8 @@ import java.util.List;
 
 import systemplus.com.br.listadecontatos.R;
 import systemplus.com.br.listadecontatos.model.Contact;
+
+import static systemplus.com.br.listadecontatos.file.ImageWriterReader.PATH_FOLDER;
 
 /**
  * Created by elias on 22/12/17.
@@ -44,8 +47,11 @@ public class ContacAdapter extends RecyclerView.Adapter<ContactViewHolder> imple
     public void onBindViewHolder(ContactViewHolder holder, int position) {
 
         Glide.with(activity)
-                .load(new File(contactList.get(position).getFoto()))
-                .apply(RequestOptions.circleCropTransform())
+                .load(new File(PATH_FOLDER + contactList.get(position).getFoto()))
+                .apply(RequestOptions
+                        .circleCropTransform()
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE))
                 .into(holder.contactFoto);
 
 

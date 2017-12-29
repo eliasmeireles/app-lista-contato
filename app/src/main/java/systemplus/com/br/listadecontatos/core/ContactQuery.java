@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,24 +77,31 @@ public class ContactQuery implements DataQuery {
         EnderecoQuery enderecoQuery = new EnderecoQuery(context, contact.getEndereco());
         contact.getEndereco().setId(enderecoQuery.insert());
 
-
         ContentValues values = new ContentValues();
         values.put(ContatoSQL.NOME_KEY, contact.getNome());
         values.put(ContatoSQL.FOTO_KEY, contact.getFoto());
         values.put(ContatoSQL.TELEFONE_KEY, contact.getTelefone());
         values.put(ContatoSQL.ENDERECO_KEY, contact.getEndereco().getId());
-
         return database.insert(ContatoSQL.TABLE_NAME_KEY, null, values);
     }
 
     @Override
     public void update() {
+        EnderecoQuery enderecoQuery = new EnderecoQuery(context, contact.getEndereco());
+        enderecoQuery.update();
 
+        ContentValues values = new ContentValues();
+        values.put(ContatoSQL.ID_KEY, contact.getId());
+        values.put(ContatoSQL.NOME_KEY, contact.getNome());
+        values.put(ContatoSQL.FOTO_KEY, contact.getFoto());
+        values.put(ContatoSQL.TELEFONE_KEY, contact.getTelefone());
+        values.put(ContatoSQL.ENDERECO_KEY, contact.getEndereco().getId());
+        database.update(ContatoSQL.TABLE_NAME_KEY, values, ContatoSQL.ID_KEY + "=?", new String[]{contact.getId() + ""});
     }
 
     @Override
     public void delete() {
-        database.delete(ContatoSQL.TABLE_NAME_KEY, "_id=?", new String[]{contact.getId() + ""});
+        database.delete(ContatoSQL.TABLE_NAME_KEY, ContatoSQL.ID_KEY + "=?", new String[]{contact.getId() + ""});
         EnderecoQuery enderecoQuery = new EnderecoQuery(context, contact.getEndereco());
         enderecoQuery.delete();
     }

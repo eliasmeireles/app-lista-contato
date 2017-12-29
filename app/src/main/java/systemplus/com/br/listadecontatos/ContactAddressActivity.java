@@ -30,18 +30,20 @@ import java.io.IOException;
 import java.util.List;
 
 import systemplus.com.br.listadecontatos.dialog.GPSDialog;
+import systemplus.com.br.listadecontatos.model.Contact;
 
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.APP_PERMISION_FINE_LOCATION;
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.ADDRESS_EXTRA_KEY;
+import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
 import static systemplus.com.br.listadecontatos.helper.CheckPermition.notLocationPemirtion;
 
 public class ContactAddressActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    private final static int APP_PERMISION_FINE_LOCATION = 101;
 
     private GoogleMap mMap;
     private Address address;
     private View addressPicker;
     private FusedLocationProviderClient mFusedLocationClient;
+    private Contact contact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,8 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+        getContactFromExtra();
 
         addressPicker = findViewById(R.id.address_picker);
 
@@ -120,8 +124,12 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, location -> {
                     // Got last known location. In some rare situations this can be null.
-                    if (location != null) {
-                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
+                    if (contact != null) {
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(contact.getEndereco().getLatitude(), contact.getEndereco().getLongitude()), 16.0f));
+                    } else {
+                        if (location != null) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16.0f));
+                        }
                     }
                 });
     }
@@ -164,5 +172,16 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
         }
 
         return address;
+    }
+
+    private void getContactFromExtra() {
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(CONTACT_EXTRA_KEY)) {
+            contact = (Contact) getIntent().getSerializableExtra(CONTACT_EXTRA_KEY);
+
+            if (contact != null) {
+
+
+            }
+        }
     }
 }

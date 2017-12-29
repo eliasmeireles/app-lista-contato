@@ -12,23 +12,24 @@ import java.io.FileOutputStream;
 
 public class ImageWriterReader {
 
-    private static final String PATH_FOLDER = "/storage/emulated/0/Android/data/systemplus.com.br.listadecontatos/files/";
-    private static final String JPG_IMAGE = ".jpg";
+    public static final String PATH_FOLDER = "/storage/emulated/0/Android/data/systemplus.com.br.listadecontatos/files/";
 
-    public static void imageSave(Bitmap imageToSave) {
+    public static String imageSave(Bitmap imageToSave, String fileName) {
 
-        File file = new File(new File(PATH_FOLDER), System.currentTimeMillis() + JPG_IMAGE);
+        File file = new File(new File(PATH_FOLDER), fileName);
         if (file.exists()) {
             file.delete();
         }
 
         try {
             FileOutputStream out = new FileOutputStream(file);
-            imageToSave.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            imageToSave.compress(Bitmap.CompressFormat.JPEG, 20, out);
             out.flush();
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return file.getName();
     }
 }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -16,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +28,8 @@ import systemplus.com.br.listadecontatos.core.ContactQuery;
 import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.CREATE_CONTACT_CODE;
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.UPDATE_CONTACT_CODE;
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
 
 public class ListContactAcitivity extends AppCompatActivity
@@ -40,6 +42,7 @@ public class ListContactAcitivity extends AppCompatActivity
     private RecyclerView contactListRecyclerView;
     private FloatingActionButton actionButton;
     private Snackbar snackbar;
+    private ContacAdapter contacAdapter;
 
 
     @Override
@@ -60,9 +63,6 @@ public class ListContactAcitivity extends AppCompatActivity
 
         viewsActions();
 
-        ContactQuery contactQuery = new ContactQuery(this, null);
-        contactList = contactQuery.findAll();
-
         setContactOnView();
 
     }
@@ -72,7 +72,6 @@ public class ListContactAcitivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
         actionButton = findViewById(R.id.fab_add_contact);
         contactListRecyclerView = findViewById(R.id.recycler_view_contact_list);
         actionButton.setOnClickListener(view -> startCadastro());
@@ -80,21 +79,7 @@ public class ListContactAcitivity extends AppCompatActivity
 
     private void startCadastro() {
         chechSnack();
-        startActivityForResult(new Intent(ListContactAcitivity.this, ContactCadastroActivity.class), 1);
-    }
-
-    private void setContactOnView() {
-        if (contactList != null && contactList.size() > 0) {
-
-            Collections.sort(contactList, (firstContact, secondContact) -> firstContact.getNome().compareTo(secondContact.getNome()));
-
-            RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(ListContactAcitivity.this,
-                    1, GridLayoutManager.VERTICAL, false);
-            ContacAdapter contacAdapter = new ContacAdapter(ListContactAcitivity.this, contactList);
-
-            contactListRecyclerView.setLayoutManager(gridLayoutManager);
-            contactListRecyclerView.setAdapter(contacAdapter);
-        }
+        startActivityForResult(new Intent(ListContactAcitivity.this, ContactCadastroActivity.class), CREATE_CONTACT_CODE);
     }
 
     @Override
@@ -115,7 +100,6 @@ public class ListContactAcitivity extends AppCompatActivity
             textView.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
             snackbar.show();
         }
-
         setContactOnView();
     }
 
@@ -153,27 +137,57 @@ public class ListContactAcitivity extends AppCompatActivity
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
-            if (resultCode == Activity.RESULT_OK) {
-                Contact contact = (Contact) data.getSerializableExtra(CONTACT_EXTRA_KEY);
-                contactList.add(contact);
 
-                DialogFragment newFragment = ContactCustomDialog.newInstance(contact);
+        switch (requestCode) {
+            case CREATE_CONTACT_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    getDataResult(data, getResources().getString(R.string.contact_added));
+                }
+                break;
 
-                newFragment.show(getFragmentManager(), "dialog");
-                chechSnack();
-
-                snackbar = Snackbar.make(actionButton, getResources().getString(R.string.contact_added), Snackbar.LENGTH_LONG);
-
-                View snackBarView = snackbar.getView();
-                snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-                snackbar.show();
-                setContactOnView();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
+            case UPDATE_CONTACT_CODE:
+                if (resultCode == Activity.RESULT_OK) {
+                    getDataResult(data, getResources().getString(R.string.contact_updated));
+                }
+                break;
         }
+
+        setContactOnView();
+    }
+
+
+    private void setContactOnView() {
+        ContactQuery contactQuery = new ContactQuery(this, null);
+        contactList = contactQuery.findAll();
+
+
+        if (contactList != null && contactList.size() > 0) {
+
+            Collections.sort(contactList, (firstContact, secondContact) -> firstContact.getNome().compareTo(secondContact.getNome()));
+
+            RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(ListContactAcitivity.this,
+                    1, GridLayoutManager.VERTICAL, false);
+            contacAdapter = new ContacAdapter(ListContactAcitivity.this, contactList);
+
+            contactListRecyclerView.setLayoutManager(gridLayoutManager);
+            contactListRecyclerView.setAdapter(contacAdapter);
+            contactListRecyclerView.invalidate();
+        }
+    }
+    private void getDataResult(Intent data, String snackbarMessage) {
+        Contact contact = (Contact) data.getSerializableExtra(CONTACT_EXTRA_KEY);
+        contactList.add(contact);
+
+        DialogFragment newFragment = ContactCustomDialog.newInstance(contact);
+
+        newFragment.show(getFragmentManager(), "dialog");
+        chechSnack();
+
+        snackbar = Snackbar.make(actionButton, snackbarMessage, Snackbar.LENGTH_LONG);
+
+        View snackBarView = snackbar.getView();
+        snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        snackbar.show();
     }
 
     private void chechSnack() {

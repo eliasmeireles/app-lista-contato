@@ -38,12 +38,12 @@ import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.dialog.GPSDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.APP_PERMISION_FINE_LOCATION;
 import static systemplus.com.br.listadecontatos.helper.CheckPermition.notLocationPemirtion;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    private final static int APP_PERMISION_FINE_LOCATION = 101;
     private List<Contact> contactList;
     private NavigationView navigationView;
     private DrawerLayout drawer;

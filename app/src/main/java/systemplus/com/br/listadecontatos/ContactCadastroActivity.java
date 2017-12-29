@@ -13,9 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,22 +26,27 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+
+import java.io.File;
 
 import systemplus.com.br.listadecontatos.core.ContactQuery;
 import systemplus.com.br.listadecontatos.intent.ImageSelectIntent;
 import systemplus.com.br.listadecontatos.model.Contact;
 import systemplus.com.br.listadecontatos.model.Endereco;
 
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.REQUEST_PERMISSION_CODE_CAMERA_GALLERY;
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.REQUEST_PERMISSION_CODE_CONTACT_EDIT;
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.RESQUEST_CODE_CONTACT_ADDRESS;
+import static systemplus.com.br.listadecontatos.extra.AppCodeKey.RESULT_LOAD_IMAGE;
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.ADDRESS_EXTRA_KEY;
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
+import static systemplus.com.br.listadecontatos.file.ImageWriterReader.PATH_FOLDER;
 import static systemplus.com.br.listadecontatos.file.ImageWriterReader.imageSave;
+import static systemplus.com.br.listadecontatos.helper.CheckPermition.cameraAndGalleryPermition;
 
 public class ContactCadastroActivity extends AppCompatActivity {
-
-    private final static int RESULT_LOAD_IMAGE = 1;
-    private static final int REQUEST_PERMISSION_CODE = 354;
-    private static final int RESQUEST_CODE_CONTACT_ADDRESS = 421;
 
     private Address address;
     private EditText contactAddress;
@@ -71,27 +73,34 @@ public class ContactCadastroActivity extends AppCompatActivity {
         contactName = findViewById(R.id.contact_name);
 
         contactPhone = findViewById(R.id.contact_phone);
-        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String countryCode = tm.getSimCountryIso();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             contactPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher(countryCode));
         }
-
 
         contactAddress = findViewById(R.id.address_picker);
         saveContact = findViewById(R.id.save_contact);
         contactImage = findViewById(R.id.profile_image);
         contactImageSet = findViewById(R.id.user_set_image);
 
-        Glide.with(this)
-                .load(R.mipmap.ic_launcher)
-                .apply(RequestOptions.circleCropTransform())
-                .into(contactImage);
 
-        contactImageSet.setOnClickListener(view -> requestPermission());
+        if (cameraAndGalleryPermition(this)) {
+            requestPermission(REQUEST_PERMISSION_CODE_CONTACT_EDIT);
+        }
+
+        checkIfContactEditable();
+
+
+        contactImageSet.setOnClickListener(view -> requestPermission(REQUEST_PERMISSION_CODE_CAMERA_GALLERY));
 
         contactAddress.setOnClickListener(view -> {
-            startActivityForResult(new Intent(ContactCadastroActivity.this, ContactAddressActivity.class), RESQUEST_CODE_CONTACT_ADDRESS);
+            Intent intent = new Intent(ContactCadastroActivity.this, ContactAddressActivity.class);
+            if (contact != null) {
+                intent.putExtra(CONTACT_EXTRA_KEY, contact);
+            }
+            startActivityForResult(intent, RESQUEST_CODE_CONTACT_ADDRESS);
         });
 
         saveContact();
@@ -99,31 +108,65 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
     private void saveContact() {
         saveContact.setOnClickListener(view -> {
-            contact = new Contact();
-            contact.setNome(contactName.getText().toString().trim());
-            contact.setTelefone(contactPhone.getText().toString().trim());
+            if (contact != null && contact.getId().toString() != null) {
+                contact.setNome(contactName.getText().toString().trim());
+                contact.setTelefone(contactPhone.getText().toString().trim());
 
-            if (!inputValidation()) {
-                imageSave(BitmapFactory.decodeFile(fotoPath));
-                contact.setFoto(fotoPath);
+                if (!contact.getEndereco().getEnderecoInfor().equals(contactAddress.getText().toString())) {
+                    if (address != null) {
+                        contact.getEndereco().setLongitude(address.getLongitude());
+                        contact.getEndereco().setLatitude(address.getLatitude());
+                        contact.getEndereco().setEnderecoInfor(address.getAddressLine(0).toString());
+                    }
+                }
 
-                Endereco endereco = new Endereco();
-                endereco.setEnderecoInfor(address.getAddressLine(0).toString());
-                endereco.setLatitude(address.getLatitude());
-                endereco.setLongitude(address.getLongitude());
+                if (!inputValidation()) {
+                    ContactQuery contactQuery = new ContactQuery(this, contact);
 
-                contact.setEndereco(endereco);
+                    String lastFileName = contact.getFoto();
 
-                ContactQuery contactQuery = new ContactQuery(this, contact);
-                contactQuery.insert();
+                    Log.e("Nome antigo da foto", lastFileName);
 
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra(CONTACT_EXTRA_KEY, contact);
-                this.setResult(Activity.RESULT_OK, returnIntent);
+                    contact.setFoto(imageSave(BitmapFactory.decodeFile(fotoPath), lastFileName));
 
-                finish();
+                    contactQuery.update();
+
+                    setDataExtra();
+                }
+            } else {
+                contact = new Contact();
+                contact.setNome(contactName.getText().toString().trim());
+                contact.setTelefone(contactPhone.getText().toString().trim());
+
+                if (!inputValidation()) {
+                    String foto = imageSave(BitmapFactory.decodeFile(fotoPath), System.currentTimeMillis() + ".jpg");
+
+                    Log.e("Foto nome", foto);
+
+                    contact.setFoto(foto);
+
+                    Endereco endereco = new Endereco();
+                    endereco.setEnderecoInfor(address.getAddressLine(0).toString());
+                    endereco.setLatitude(address.getLatitude());
+                    endereco.setLongitude(address.getLongitude());
+
+                    contact.setEndereco(endereco);
+
+                    ContactQuery contactQuery = new ContactQuery(this, contact);
+                    contactQuery.insert();
+
+                    setDataExtra();
+                }
             }
         });
+    }
+
+    private void setDataExtra() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(CONTACT_EXTRA_KEY, contact);
+        this.setResult(Activity.RESULT_OK, returnIntent);
+
+        finish();
     }
 
     @Override
@@ -138,12 +181,11 @@ public class ContactCadastroActivity extends AppCompatActivity {
         return true;
     }
 
-    private void requestPermission() {
+    private void requestPermission(int permitionCode) {
         imageSelectIntent = new ImageSelectIntent(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (cameraAndGalleryPermition(this)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, REQUEST_PERMISSION_CODE);
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, permitionCode);
             }
         } else {
             startActivityForResult(imageSelectIntent.getPickImageIntent(), RESULT_LOAD_IMAGE);
@@ -156,13 +198,24 @@ public class ContactCadastroActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case REQUEST_PERMISSION_CODE:
+            case REQUEST_PERMISSION_CODE_CAMERA_GALLERY:
 
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startActivityForResult(imageSelectIntent.getPickImageIntent(), RESULT_LOAD_IMAGE);
                 }
 
                 break;
+
+            case REQUEST_PERMISSION_CODE_CONTACT_EDIT:
+
+                if (cameraAndGalleryPermition(this) && contact!= null && contact.getFoto() != null) {
+
+                    Glide.with(this)
+                            .load(new File(contact.getFoto()))
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(contactImage);
+
+                }
         }
     }
 
@@ -212,7 +265,10 @@ public class ContactCadastroActivity extends AppCompatActivity {
             Log.e("Path", fotoPath);
             Glide.with(this)
                     .load(BitmapFactory.decodeFile(fotoPath))
-                    .apply(RequestOptions.circleCropTransform())
+                    .apply(RequestOptions
+                            .circleCropTransform()
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE))
                     .into(contactImage);
 
         }
@@ -254,16 +310,30 @@ public class ContactCadastroActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    public FragmentTransaction getFragmentTransaction() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        return fragmentManager.beginTransaction();
-    }
+    private void checkIfContactEditable() {
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(CONTACT_EXTRA_KEY)) {
+            contact = (Contact) getIntent().getSerializableExtra(CONTACT_EXTRA_KEY);
 
-    public Address getAddress() {
-        return address;
-    }
+            if (contact != null) {
 
-    public void setAddress(Address address) {
-        this.address = address;
+                contactAddress.setText(contact.getEndereco().getEnderecoInfor());
+                contactName.setText(contact.getNome());
+                contactPhone.setText(contact.getTelefone());
+                fotoPath = contact.getFoto();
+
+
+                Glide.with(this)
+                        .load(new File(PATH_FOLDER + contact.getFoto()))
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(contactImage);
+
+            }
+        } else {
+
+            Glide.with(this)
+                    .load(R.mipmap.ic_launcher)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(contactImage);
+        }
     }
 }

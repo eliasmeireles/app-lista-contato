@@ -8,9 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
-import systemplus.com.br.listadecontatos.model.Contact;
 import systemplus.com.br.listadecontatos.model.Endereco;
-import systemplus.com.br.listadecontatos.sql.ContatoSQL;
 import systemplus.com.br.listadecontatos.sql.EnderecoSQL;
 
 import static systemplus.com.br.listadecontatos.core.GetSQLiteDatabase.getSQLiteDatabase;
@@ -58,12 +56,17 @@ public class EnderecoQuery implements DataQuery {
 
     @Override
     public void update() {
-
+        ContentValues values = new ContentValues();
+        values.put(EnderecoSQL.ID_KEY, endereco.getId());
+        values.put(EnderecoSQL.ENDERECO_INFOR_KEY, endereco.getEnderecoInfor());
+        values.put(EnderecoSQL.LATITUDE_KEY, endereco.getLatitude());
+        values.put(EnderecoSQL.LONGITUDE_KEY, endereco.getLongitude());
+        database.update(EnderecoSQL.TABLE_NAME_KEY, values, EnderecoSQL.ID_KEY + "=?", new String[]{endereco.getId() + ""});
     }
 
     @Override
     public void delete() {
-        database.delete(EnderecoSQL.TABLE_NAME_KEY, "_id=?", new String[]{endereco.getId() + ""});
+        database.delete(EnderecoSQL.TABLE_NAME_KEY, EnderecoSQL.ID_KEY + "=?", new String[]{endereco.getId() + ""});
 
     }
 
