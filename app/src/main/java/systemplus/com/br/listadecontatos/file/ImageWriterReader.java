@@ -32,4 +32,11 @@ public class ImageWriterReader {
 
         return file.getName();
     }
+
+    public static void deleteFile(String fileName) {
+        File file = new File(new File(PATH_FOLDER), fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 }

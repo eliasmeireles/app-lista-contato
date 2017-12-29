@@ -24,6 +24,7 @@ import systemplus.com.br.listadecontatos.model.Contact;
 
 import static systemplus.com.br.listadecontatos.extra.AppExtraKey.CONTACT_EXTRA_KEY;
 import static systemplus.com.br.listadecontatos.file.ImageWriterReader.PATH_FOLDER;
+import static systemplus.com.br.listadecontatos.file.ImageWriterReader.deleteFile;
 
 /**
  * Created by elias on 26/12/17.
@@ -75,6 +76,7 @@ public class DeletContactDialog extends DialogFragment {
             ContactQuery contactQuery = new ContactQuery(getActivity(), contact);
             contactQuery.delete();
 
+            deleteFile(contact.getFoto());
 
             contacAdapter.getContactList().remove(positon);
             contacAdapter.notifyItemRemoved(positon);

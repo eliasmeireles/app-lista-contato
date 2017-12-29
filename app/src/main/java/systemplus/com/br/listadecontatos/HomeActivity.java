@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +20,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,18 +41,20 @@ import systemplus.com.br.listadecontatos.dialog.ContactCustomDialog;
 import systemplus.com.br.listadecontatos.dialog.GPSDialog;
 import systemplus.com.br.listadecontatos.model.Contact;
 
-import static systemplus.com.br.listadecontatos.extra.AppCodeKey.APP_PERMISION_FINE_LOCATION;
 import static systemplus.com.br.listadecontatos.helper.CheckPermition.notLocationPemirtion;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
+    private final static int APP_PERMISION_FINE_LOCATION = 101;
     private List<Contact> contactList;
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private GoogleMap mMap;
     private Location location;
     private FusedLocationProviderClient mFusedLocationClient;
+    private Snackbar snackbar;
+    private View fragmentView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +76,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        fragmentView = findViewById(R.id.map);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -235,7 +241,16 @@ public class HomeActivity extends AppCompatActivity
         contactList = contactQuery.findAll();
 
         if (contactList == null || contactList.size() == 0) {
-            startActivity(new Intent(HomeActivity.this, ListContactAcitivity.class));
+
+            snackbar = Snackbar.make(fragmentView, getResources().getString(R.string.contact_list_empty), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getResources().getString(R.string.snackbar_leave), view1 -> {
+                    });
+
+            View snackBarView = snackbar.getView();
+            snackBarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+            TextView textView = snackBarView.findViewById(android.support.design.R.id.snackbar_action);
+            textView.setTextColor(getResources().getColor(R.color.colorSecondaryDark));
+            snackbar.show();
         }
     }
 
