@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -30,6 +32,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.IOException;
 
 import systemplus.com.br.listadecontatos.core.ContactQuery;
 import systemplus.com.br.listadecontatos.intent.ImageSelectIntent;
@@ -56,8 +60,8 @@ public class ContactCadastroActivity extends AppCompatActivity {
     private EditText contactPhone;
     private ImageView contactImage;
     private ImageView contactImageSet;
-    private String fotoPath;
     private ImageSelectIntent imageSelectIntent;
+    private Bitmap image;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,10 +126,10 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
                 if (!inputValidation()) {
 
-                    if (fotoPath != null) {
+                    if (image != null) {
                         String lastFileName = contact.getFoto();
 
-                        contact.setFoto(imageSave(BitmapFactory.decodeFile(fotoPath), lastFileName));
+                        contact.setFoto(imageSave(image, lastFileName));
 
                     }
 
@@ -141,7 +145,7 @@ public class ContactCadastroActivity extends AppCompatActivity {
                     contact.setNome(contactName.getText().toString().trim());
                     contact.setTelefone(contactPhone.getText().toString().trim());
 
-                    String foto = imageSave(BitmapFactory.decodeFile(fotoPath), System.currentTimeMillis() + ".jpg");
+                    String foto = imageSave(image, System.currentTimeMillis() + ".jpg");
 
                     Log.e("Foto nome", foto);
 
@@ -210,7 +214,7 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
             case REQUEST_PERMISSION_CODE_CONTACT_EDIT:
 
-                if (cameraAndGalleryPermition(this) && contact!= null && contact.getFoto() != null) {
+                if (cameraAndGalleryPermition(this) && contact != null && contact.getFoto() != null) {
 
                     Glide.with(this)
                             .load(new File(contact.getFoto()))
@@ -236,7 +240,28 @@ public class ContactCadastroActivity extends AppCompatActivity {
                 }
                 break;
             case RESULT_LOAD_IMAGE:
-                imageRequestResult(requestCode, resultCode, data);
+                if (resultCode == RESULT_OK) {
+                    if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+                        Uri uri = data.getData();
+                        try {
+                            image = getBitmapFromUri(uri);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        // Log.d(TAG, String.valueOf(bitmap));
+
+                        if (image != null) {
+                            Glide.with(this)
+                                    .load(image)
+                                    .apply(RequestOptions
+                                            .circleCropTransform()
+                                            .skipMemoryCache(true)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE))
+                                    .into(contactImage);
+                        }
+
+                    }
+                }
                 break;
 
         }
@@ -244,36 +269,14 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
     }
 
-    private void imageRequestResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
 
-
-            if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                fotoPath = cursor.getString(columnIndex);
-                cursor.close();
-
-            } else if (requestCode == RESULT_LOAD_IMAGE) {
-                fotoPath = imageSelectIntent.getFotoPath();
-            }
-
-            Log.e("Path", fotoPath);
-            Glide.with(this)
-                    .load(BitmapFactory.decodeFile(fotoPath))
-                    .apply(RequestOptions
-                            .circleCropTransform()
-                            .skipMemoryCache(true)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(contactImage);
-
-        }
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException {
+        ParcelFileDescriptor parcelFileDescriptor =
+                getContentResolver().openFileDescriptor(uri, "r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return image;
     }
 
     private boolean inputValidation() {
@@ -300,7 +303,7 @@ public class ContactCadastroActivity extends AppCompatActivity {
             validation = true;
         }
 
-        if (fotoPath == null && contact == null) {
+        if (image == null && contact == null) {
             validation = true;
             Toast.makeText(this, getResources().getString(R.string.nedd_to_get_image), Toast.LENGTH_SHORT).show();
         }
