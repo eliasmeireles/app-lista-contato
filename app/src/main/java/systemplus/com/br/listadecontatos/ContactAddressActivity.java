@@ -177,11 +177,6 @@ public class ContactAddressActivity extends AppCompatActivity implements OnMapRe
     private void getContactFromExtra() {
         if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(CONTACT_EXTRA_KEY)) {
             contact = (Contact) getIntent().getSerializableExtra(CONTACT_EXTRA_KEY);
-
-            if (contact != null) {
-
-
-            }
         }
     }
 }

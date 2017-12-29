@@ -121,24 +121,26 @@ public class ContactCadastroActivity extends AppCompatActivity {
                 }
 
                 if (!inputValidation()) {
+
+                    if (fotoPath != null) {
+                        String lastFileName = contact.getFoto();
+
+                        contact.setFoto(imageSave(BitmapFactory.decodeFile(fotoPath), lastFileName));
+
+                    }
+
                     ContactQuery contactQuery = new ContactQuery(this, contact);
-
-                    String lastFileName = contact.getFoto();
-
-                    Log.e("Nome antigo da foto", lastFileName);
-
-                    contact.setFoto(imageSave(BitmapFactory.decodeFile(fotoPath), lastFileName));
-
                     contactQuery.update();
 
                     setDataExtra();
                 }
             } else {
-                contact = new Contact();
-                contact.setNome(contactName.getText().toString().trim());
-                contact.setTelefone(contactPhone.getText().toString().trim());
 
                 if (!inputValidation()) {
+                    contact = new Contact();
+                    contact.setNome(contactName.getText().toString().trim());
+                    contact.setTelefone(contactPhone.getText().toString().trim());
+
                     String foto = imageSave(BitmapFactory.decodeFile(fotoPath), System.currentTimeMillis() + ".jpg");
 
                     Log.e("Foto nome", foto);
@@ -276,29 +278,29 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
     private boolean inputValidation() {
         boolean validation = false;
-        if (contact.getNome().isEmpty()) {
+        if (contactName.getText().toString().isEmpty()) {
             validation = true;
             contactName.setError(getResources().getString(R.string.nome_null));
             contactName.setText("");
         }
 
-        if (contact.getTelefone().isEmpty()) {
+        if (contactPhone.getText().toString().isEmpty()) {
             contactPhone.setError(getResources().getString(R.string.phone_null));
             contactPhone.setText("");
             validation = true;
         }
 
-        if (contact.getTelefone().length() < 11) {
+        if (contactPhone.getText().toString().length() < 11) {
             contactPhone.setError(getResources().getString(R.string.phone_number_invalid));
             validation = true;
         }
 
-        if (address == null) {
+        if (address == null && contactAddress.getText().toString().trim().isEmpty()) {
             contactAddress.setError(getResources().getString(R.string.address_null));
             validation = true;
         }
 
-        if (fotoPath == null) {
+        if (fotoPath == null && contact == null) {
             validation = true;
             Toast.makeText(this, getResources().getString(R.string.nedd_to_get_image), Toast.LENGTH_SHORT).show();
         }
@@ -319,12 +321,13 @@ public class ContactCadastroActivity extends AppCompatActivity {
                 contactAddress.setText(contact.getEndereco().getEnderecoInfor());
                 contactName.setText(contact.getNome());
                 contactPhone.setText(contact.getTelefone());
-                fotoPath = contact.getFoto();
-
 
                 Glide.with(this)
                         .load(new File(PATH_FOLDER + contact.getFoto()))
-                        .apply(RequestOptions.circleCropTransform())
+                        .apply(RequestOptions
+                                .circleCropTransform()
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(contactImage);
 
             }
@@ -332,7 +335,10 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
             Glide.with(this)
                     .load(R.mipmap.ic_launcher)
-                    .apply(RequestOptions.circleCropTransform())
+                    .apply(RequestOptions
+                            .circleCropTransform()
+                            .skipMemoryCache(true)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE))
                     .into(contactImage);
         }
     }
