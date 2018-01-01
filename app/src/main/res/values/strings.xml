@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lista De Contatos</string>
+    <string name="app_name">Contatos</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -36,7 +36,6 @@
     <string name="need_to_add_permisson_lotcation">É preciso ativar o serviço de localização!</string>
 
 
-    <!--Contact validation fields-->
     <string name="nedd_to_get_image">Escolha ou tire uma foto para o contato!</string>
     <string name="address_null">Endereço obrigatório!</string>
     <string name="phone_number_invalid">Número inválido!</string>

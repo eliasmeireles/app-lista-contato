@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -13,8 +12,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -62,6 +62,7 @@ public class ContactCadastroActivity extends AppCompatActivity {
     private ImageView contactImageSet;
     private ImageSelectIntent imageSelectIntent;
     private Bitmap image;
+    private Snackbar snackbar;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -229,7 +230,6 @@ public class ContactCadastroActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         switch (requestCode) {
             case RESQUEST_CODE_CONTACT_ADDRESS:
                 if (requestCode == RESQUEST_CODE_CONTACT_ADDRESS && resultCode == RESULT_OK && null != data) {
@@ -238,6 +238,7 @@ public class ContactCadastroActivity extends AppCompatActivity {
                         contactAddress.setText(address.getAddressLine(0).toString());
                     }
                 }
+
                 break;
             case RESULT_LOAD_IMAGE:
                 if (resultCode == RESULT_OK) {
@@ -245,12 +246,9 @@ public class ContactCadastroActivity extends AppCompatActivity {
                         Uri uri = data.getData();
                         try {
                             image = getBitmapFromUri(uri);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        // Log.d(TAG, String.valueOf(bitmap));
 
-                        if (image != null) {
+                            chechSnack();
+                            
                             Glide.with(this)
                                     .load(image)
                                     .apply(RequestOptions
@@ -258,14 +256,17 @@ public class ContactCadastroActivity extends AppCompatActivity {
                                             .skipMemoryCache(true)
                                             .diskCacheStrategy(DiskCacheStrategy.NONE))
                                     .into(contactImage);
+                        } catch (IOException e) {
+                            defaultImage();
+                            e.printStackTrace();
                         }
-
                     }
                 }
+
                 break;
-
+            default:
+                break;
         }
-
 
     }
 
@@ -305,7 +306,13 @@ public class ContactCadastroActivity extends AppCompatActivity {
 
         if (image == null && contact == null) {
             validation = true;
-            Toast.makeText(this, getResources().getString(R.string.nedd_to_get_image), Toast.LENGTH_SHORT).show();
+            snackbar = Snackbar.make(saveContact, getResources().getString(R.string.nedd_to_get_image), Snackbar.LENGTH_INDEFINITE)
+                    .setAction(getResources().getString(R.string.snackbar_leave), view1 -> {
+                    });
+
+            View snackBarView = snackbar.getView();
+            snackBarView.setBackgroundColor(getResources().getColor(R.color.colorWarning));
+            snackbar.show();
         }
         return validation;
     }
@@ -336,13 +343,23 @@ public class ContactCadastroActivity extends AppCompatActivity {
             }
         } else {
 
-            Glide.with(this)
-                    .load(R.mipmap.ic_launcher)
-                    .apply(RequestOptions
-                            .circleCropTransform()
-                            .skipMemoryCache(true)
-                            .diskCacheStrategy(DiskCacheStrategy.NONE))
-                    .into(contactImage);
+            defaultImage();
+        }
+    }
+
+    private void defaultImage() {
+        Glide.with(this)
+                .load(R.mipmap.ic_launcher)
+                .apply(RequestOptions
+                        .circleCropTransform()
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE))
+                .into(contactImage);
+    }
+
+    private void chechSnack() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
         }
     }
 }
